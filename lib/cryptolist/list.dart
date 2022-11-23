@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 ListTile generateList(Map<String, dynamic> crypto) {
   bool priceUp = false;
-  String pre = '▼';
+  String pre = '▼ ';
   var priceChangePercentage24h = crypto['price_change_percentage_24h'];
   if(crypto['price_change_percentage_24h'] >= 0.0) {
-    pre = '▲';
+    pre = '▲ ';
     priceUp = true;
   } else {
     priceChangePercentage24h = priceChangePercentage24h * -1;
   }
-  priceChangePercentage24h = '$pre ${priceChangePercentage24h.toStringAsFixed(3)}%';
+  priceChangePercentage24h = '$pre${priceChangePercentage24h.toStringAsFixed(3)}%';
     return ListTile(
       leading:
           Container(

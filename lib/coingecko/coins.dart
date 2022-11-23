@@ -33,6 +33,6 @@ Future<List<dynamic>> markets(String vsCurrency, int n) async {
   return res;
 }
 
-Future<void> main() async {
-  print(await markets('usd', 1000));
-}
+// Future<void> main() async {
+//   print(await markets('usd', 1000));
+// }

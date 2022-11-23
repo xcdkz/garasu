@@ -99,15 +99,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               } else if(snapshot.hasError) {
                 cryptoList = ListView.separated(
-                    itemCount: 10,
+                    itemCount: 1,
                     separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 0, endIndent: 0,),
-                    itemBuilder: (BuildContext context, int index) => const Text("Error fetching prices"),
+                    itemBuilder: (BuildContext context, int index) => Text(
+                        "Error fetching prices: ${snapshot.error!}" ,
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                    ),
                 );
               } else {
                 cryptoList = ListView.separated(
-                  itemCount: 10,
+                  itemCount: 1,
                   separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 0, endIndent: 0,),
-                  itemBuilder: (BuildContext context, int index) => const Text("fetching..."),
+                  itemBuilder: (BuildContext context, int index) => const Text(
+                      "fetching...",
+                      style: TextStyle(
+                        color: Colors.white
+                      )
+                  ),
                 );
               }
             return cryptoList;
