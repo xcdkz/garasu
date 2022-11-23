@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'list.dart' as list;
+import 'cryptolist/list.dart' as list;
 import 'coingecko/coins.dart' as cng_coins;
 
 void main() {
@@ -31,13 +31,56 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final Future<List<dynamic>> _loadCrypto = cng_coins.markets('usd', 1000);
+  final Future<List<dynamic>> _loadCrypto = cng_coins.markets('usd', 250);
+  var searchIcon = Icons.search;
+  Widget barTitle = const Text('Garasu');
+  String query = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: barTitle,
         backgroundColor: Colors.black,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                if(searchIcon == Icons.search) {
+                  searchIcon = Icons.clear;
+                  barTitle = ListTile(
+                    leading: const Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    title: TextField(
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        hintText: 'Search for Cryptocurrency...',
+                        hintStyle: TextStyle(
+                          color: Colors.white,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          query = value;
+                        });
+                      },
+                    ),
+                  );
+                } else {
+                  searchIcon = Icons.search;
+                  barTitle = const Text('Garasu');
+                }
+              });
+            },
+            icon: Icon(searchIcon),
+          )
+        ],
       ),
       body: Container(
         color: Colors.black,
@@ -46,21 +89,24 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
               ListView cryptoList;
               if(snapshot.hasData) {
+                var items = snapshot.data!
+                    .where((item) => (item['id'].contains(query) || item['symbol'].contains(query)))
+                    .toList();
                 cryptoList = ListView.separated(
-                  itemCount: 1000,
-                  separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 40, endIndent: 40,),
-                  itemBuilder: (BuildContext context, int index) => list.generateList(index, snapshot.data![index]),
+                  itemCount: items.length,
+                  separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 0, endIndent: 0,),
+                  itemBuilder: (BuildContext context, int index) => list.generateList(items[index]),
                 );
               } else if(snapshot.hasError) {
                 cryptoList = ListView.separated(
                     itemCount: 10,
-                    separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 40, endIndent: 40,),
+                    separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 0, endIndent: 0,),
                     itemBuilder: (BuildContext context, int index) => const Text("Error fetching prices"),
                 );
               } else {
                 cryptoList = ListView.separated(
                   itemCount: 10,
-                  separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 40, endIndent: 40,),
+                  separatorBuilder: (BuildContext context, int index) => const Divider(color: Colors.white, indent: 0, endIndent: 0,),
                   itemBuilder: (BuildContext context, int index) => const Text("fetching..."),
                 );
               }

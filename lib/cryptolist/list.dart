@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
-ListTile generateList(int index, Map<String, dynamic> crypto) {
+ListTile generateList(Map<String, dynamic> crypto) {
   bool priceUp = false;
-  String pre = '-';
-  if(crypto['price_change_percentage_24h'] > 0.0) {
-    pre = '+';
+  String pre = '▼';
+  var priceChangePercentage24h = crypto['price_change_percentage_24h'];
+  if(crypto['price_change_percentage_24h'] >= 0.0) {
+    pre = '▲';
     priceUp = true;
+  } else {
+    priceChangePercentage24h = priceChangePercentage24h * -1;
   }
-  var price_change_percentage_24h = '${pre + crypto['price_change_percentage_24h'].toStringAsFixed(3)}%';
+  priceChangePercentage24h = '$pre ${priceChangePercentage24h.toStringAsFixed(3)}%';
     return ListTile(
       leading:
           Container(
@@ -15,9 +18,13 @@ ListTile generateList(int index, Map<String, dynamic> crypto) {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget> [
-                Text(
-                  '${index+1}',
-                  style: const TextStyle(color: Colors.white70)
+                SizedBox(
+                  width: 30,
+                  child: Text(
+                    '${crypto['market_place']}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
                 ),
                 const SizedBox(
                   width: 20,
@@ -34,7 +41,7 @@ ListTile generateList(int index, Map<String, dynamic> crypto) {
           children: <Widget>[
             Expanded(
               child: Text(
-                crypto['id'],
+                '${crypto['id']}',
                 style: const TextStyle(color: Colors.white),
                 textAlign: TextAlign.left,
               ),
@@ -44,8 +51,9 @@ ListTile generateList(int index, Map<String, dynamic> crypto) {
             ),
             Expanded(
               child: Text(
-                '$price_change_percentage_24h',
+                priceChangePercentage24h,
                 style: TextStyle(color: priceUp ? Colors.green : Colors.red),
+                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(
