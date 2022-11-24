@@ -23,14 +23,20 @@ ListTile generateList(Map<String, dynamic> crypto) {
                   child: Text(
                     '${crypto['market_place']}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white70),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
                 const SizedBox(
                   width: 20,
                 ),
                 Container(
-                  color: Colors.white,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey.withOpacity(0.15),
+                  ),
                   child: Image.network(crypto['image']),
                 ),
               ],
@@ -42,7 +48,10 @@ ListTile generateList(Map<String, dynamic> crypto) {
             Expanded(
               child: Text(
                 '${crypto['id']}',
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
                 textAlign: TextAlign.left,
               ),
             ),
@@ -52,7 +61,10 @@ ListTile generateList(Map<String, dynamic> crypto) {
             Expanded(
               child: Text(
                 priceChangePercentage24h,
-                style: TextStyle(color: priceUp ? Colors.green : Colors.red),
+                style: TextStyle(
+                  color: priceUp ? Colors.green : Colors.red,
+                  fontSize: 14,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -62,7 +74,10 @@ ListTile generateList(Map<String, dynamic> crypto) {
             Expanded(
               child: Text(
                 '\$${crypto['current_price']}',
-                style: TextStyle(color: priceUp ? Colors.green : Colors.red),
+                style: TextStyle(
+                  color: priceUp ? Colors.green : Colors.red,
+                  fontSize: 14,
+                ),
                 textAlign: TextAlign.right,
               ),
             ),
