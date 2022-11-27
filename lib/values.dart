@@ -6,12 +6,12 @@ class Values {
     initialPage: 0,
   );
   Future<List<dynamic>> cryptoListFeed = refreshCrypto('usd', 250);
-  List<dynamic> items = [];
-  List<dynamic> queriedItems = [];
+  String query = '';
   var topBarIcon = Icons.search;
   int activePageIndex = 0;
   Widget barTitle = const Text('Garasu');
-  String query = '';
+
+
   Values(String vsCurrencies, int n) {
     cryptoListFeed = refreshCrypto(vsCurrencies, n);
   }

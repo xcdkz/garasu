@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:garasu/values.dart' as val;
-import 'dart:developer' as developer;
 
 class CryptoList extends StatefulWidget {
   final val.Values values;
@@ -15,25 +14,29 @@ class CryptoList extends StatefulWidget {
 
 class _CryptoListState extends State<CryptoList> {
   Future<void> _refreshList() async {
-    widget.values.cryptoListFeed = val.refreshCrypto('usd', 250);
+    setState(() {
+      widget.values.cryptoListFeed = val.refreshCrypto('usd', 250);
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: _refreshList,
-      child: FutureBuilder<List<dynamic>> (
+      child: FutureBuilder<List<dynamic>>(
         future: widget.values.cryptoListFeed,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             var queriedItems = snapshot.data!
                 .where((item) => (item['id'].contains(widget.values.query) ||
-                item['symbol'].contains(widget.values.query) ||
-                item['name'].toLowerCase().contains(widget.values.query)))
+                    item['symbol'].contains(widget.values.query) ||
+                    item['name'].toLowerCase().contains(widget.values.query)))
                 .toList();
             return ListView.separated(
                 itemBuilder: (BuildContext context, int index) {
                   return CryptoListRow(
-                    priceChangePercentage24h: queriedItems[index]['price_change_percentage_24h'],
+                    priceChangePercentage24h: queriedItems[index]
+                        ['price_change_percentage_24h'],
                     marketPlace: queriedItems[index]['market_place'],
                     logo: queriedItems[index]['image'],
                     name: queriedItems[index]['name'],
@@ -47,22 +50,18 @@ class _CryptoListState extends State<CryptoList> {
                     endIndent: 0,
                   );
                 },
-                itemCount: queriedItems.length
-            );
+                itemCount: queriedItems.length);
           } else if (!snapshot.hasData) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           } else {
             return const Center(
-              child: Text(
-                'Error',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                )
-              )
-            );
+                child: Text('Error',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                    )));
           }
         },
       ),
@@ -134,47 +133,45 @@ class _CryptoListRowState extends State<CryptoListRow> {
           ],
         ),
       ),
-      title: Container(
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                widget.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.left,
+      title: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              widget.name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
               ),
+              textAlign: TextAlign.left,
             ),
-            const SizedBox(
-              width: 20.0,
-            ),
-            Expanded(
-              child: Text(
-                sPriceChangePercentage24h,
-                style: TextStyle(
-                  color: priceUp ? Colors.green : Colors.red,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.center,
+          ),
+          const SizedBox(
+            width: 20.0,
+          ),
+          Expanded(
+            child: Text(
+              sPriceChangePercentage24h,
+              style: TextStyle(
+                color: priceUp ? Colors.green : Colors.red,
+                fontSize: 14,
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(
-              width: 20.0,
-            ),
-            Expanded(
-              child: Text(
-                '\$${widget.currentPrice}',
-                style: TextStyle(
-                  color: priceUp ? Colors.green : Colors.red,
-                  fontSize: 14,
-                ),
-                textAlign: TextAlign.right,
+          ),
+          const SizedBox(
+            width: 20.0,
+          ),
+          Expanded(
+            child: Text(
+              '\$${widget.currentPrice}',
+              style: TextStyle(
+                color: priceUp ? Colors.green : Colors.red,
+                fontSize: 14,
               ),
+              textAlign: TextAlign.right,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

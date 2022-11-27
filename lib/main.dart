@@ -88,12 +88,16 @@ class _MyHomePageState extends State<MyHomePage> {
             setState(() {
               val.activePageIndex = index;
               val.barTitle = const Text('Garasu');
-              if (val.activePageIndex == 0) {
-                val.topBarIcon = Icons.search;
-              } else if (val.activePageIndex == 1) {
-                val.topBarIcon = Icons.add;
-              } else if (val.activePageIndex == 2) {
-                val.topBarIcon = Icons.more_vert;
+              switch(val.activePageIndex) {
+                case 0: {
+                  val.topBarIcon = Icons.search;
+                } break;
+                case 1: {
+                  val.topBarIcon = Icons.add;
+                } break;
+                case 2: {
+                  val.topBarIcon = Icons.more_vert;
+                } break;
               }
             });
           },
