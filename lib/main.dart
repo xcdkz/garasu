@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'cryptolist/list.dart' as list;
-import 'coingecko/coins.dart' as cng_coins;
+import 'values.dart' as values;
+import 'portfolio/portfolio.dart' as portfolio;
 
 void main() {
   runApp(const MyApp());
@@ -30,31 +31,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final PageController _pageController = PageController(
-    initialPage: 0,
-  );
-  // void _onRefresh() {
-  //   _loadCrypto = cng_coins.markets('usd', 250);
-  // }
-  final Future<List<dynamic>> _loadCrypto = cng_coins.markets('usd', 250);
-  var topBarIcon = Icons.search;
-  int activePageIndex = 0;
-  Widget barTitle = const Text('Garasu');
-  String query = '';
+  var val = values.Values('usd', 250);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: barTitle,
+        title: val.barTitle,
         backgroundColor: Colors.black,
         actions: [
           IconButton(
-            icon: Icon(topBarIcon),
+            icon: Icon(val.topBarIcon),
             onPressed: () {
               setState(() {
-                if (topBarIcon == Icons.search) {
-                  topBarIcon = Icons.clear;
-                  barTitle = ListTile(
+                if (val.topBarIcon == Icons.search) {
+                  val.topBarIcon = Icons.clear;
+                  val.barTitle = ListTile(
                     leading: const Icon(
                       Icons.search,
                       color: Colors.white,
@@ -73,15 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         border: InputBorder.none,
                       ),
                       onChanged: (value) {
-                        query = value;
+                        val.query = value.toLowerCase();
                         setState(() {});
                       },
                     ),
                   );
-                } else if (topBarIcon == Icons.clear) {
-                  topBarIcon = Icons.search;
-                  barTitle = const Text('Garasu');
-                  query = '';
+                } else if (val.topBarIcon == Icons.clear) {
+                  val.topBarIcon = Icons.search;
+                  val.barTitle = const Text('Garasu');
+                  val.query = '';
                 }
               });
             },
@@ -90,154 +81,77 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Container(
         color: Colors.black,
-        child: FutureBuilder<List<dynamic>>(
-          future: _loadCrypto,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (snapshot.hasData) {
-              var items = snapshot.data!
-                  .where((item) => (item['id'].contains(query) ||
-                      item['symbol'].contains(query)))
-                  .toList();
-              return PageView(
-                  controller: _pageController,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: (index) {
-                    setState(() {
-                      activePageIndex = index;
-                      barTitle = const Text('Garasu');
-                      if (index == 0) {
-                        topBarIcon = Icons.search;
-                      } else if (index == 1) {
-                        topBarIcon = Icons.add;
-                      }
-                    });
-                  },
-                  children: [
-
-                    ListView.separated(
-                      itemCount: items.length,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
-                        color: Colors.white,
-                        indent: 0,
-                        endIndent: 0,
-                      ),
-                      itemBuilder: (BuildContext context, int index) =>
-                          list.generateList(items[index]),
-                    ),
-                    const Center(
-                      child: Text(
-                        'There will be user\'s wallet',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 40,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const Center(
-                      child: Text(
-                        'More coming soon...',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 40,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ]);
-            } else if (snapshot.hasError) {
-              return ListView.separated(
-                itemCount: 1,
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(
-                  color: Colors.white,
-                  indent: 0,
-                  endIndent: 0,
-                ),
-                itemBuilder: (BuildContext context, int index) => Text(
-                  "Error fetching prices: ${snapshot.error!}",
-                  style: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              );
-            } else {
-              return ListView.separated(
-                itemCount: 1,
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(
-                  color: Colors.white,
-                  indent: 0,
-                  endIndent: 0,
-                ),
-                itemBuilder: (BuildContext context, int index) => const Text(
-                    "fetching...",
-                    style: TextStyle(color: Colors.white)),
-              );
-            }
+        child: PageView(
+          controller: val.pageController,
+          scrollDirection: Axis.horizontal,
+          onPageChanged: (index) {
+            setState(() {
+              val.activePageIndex = index;
+              val.barTitle = const Text('Garasu');
+              if (val.activePageIndex == 0) {
+                val.topBarIcon = Icons.search;
+              } else if (val.activePageIndex == 1) {
+                val.topBarIcon = Icons.add;
+              } else if (val.activePageIndex == 2) {
+                val.topBarIcon = Icons.more_vert;
+              }
+            });
           },
-        ),
+          children: [
+            list.CryptoList(
+              values: val,
+            ),
+            const portfolio.Portfolio(),
+            const Center(
+              child: Text(
+                'More coming soon...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40,
+                ),
+                textAlign: TextAlign.center,
+              )
+            )
+          ],
+        )
       ),
       bottomNavigationBar: SalomonBottomBar(
-        currentIndex: activePageIndex,
+        currentIndex: val.activePageIndex,
         onTap: (index) {
           setState(() {
-            _pageController.animateToPage(index, duration: const Duration(milliseconds: 600), curve: Curves.decelerate);
+            val.pageController.animateToPage(index,
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.decelerate);
           });
         },
-        // unselectedItemColor: Colors.black,
-        // selectedItemColor: Colors.green,
         selectedColorOpacity: 0.2,
         margin: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
         items: [
-            SalomonBottomBarItem(
-              icon: const Icon(
-                Icons.area_chart_outlined,
-              ),
-              title: const Text('Main'),
-              selectedColor: Colors.green,
-              unselectedColor: Colors.grey,
+          SalomonBottomBarItem(
+            icon: const Icon(
+              Icons.area_chart_outlined,
             ),
-            SalomonBottomBarItem(
-              icon: const Icon(
-                Icons.monetization_on_outlined,
-              ),
-              title: const Text('Portfolio'),
-              selectedColor: Colors.green,
-              unselectedColor: Colors.grey,
+            title: const Text('Main'),
+            selectedColor: Colors.green,
+            unselectedColor: Colors.grey,
+          ),
+          SalomonBottomBarItem(
+            icon: const Icon(
+              Icons.monetization_on_outlined,
             ),
-            SalomonBottomBarItem(
-              icon: const Icon(
-                Icons.more_horiz,
-              ),
-              title: const Text('More'),
-              selectedColor: Colors.green,
-              unselectedColor: Colors.grey,
+            title: const Text('Portfolio'),
+            selectedColor: Colors.green,
+            unselectedColor: Colors.grey,
+          ),
+          SalomonBottomBarItem(
+            icon: const Icon(
+              Icons.more_horiz,
             ),
+            title: const Text('More'),
+            selectedColor: Colors.green,
+            unselectedColor: Colors.grey,
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class SecondRoute extends StatelessWidget {
-  const SecondRoute({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Second Route'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Go back!'),
-        ),
       ),
     );
   }
