@@ -13,7 +13,7 @@ List<SalomonBottomBarItem> bottomBarItems() {
       ),
       SalomonBottomBarItem(
         icon: const Icon(
-          Icons.monetization_on_outlined,
+          Icons.wallet_outlined,
         ),
         title: const Text('Portfolio'),
         selectedColor: Colors.green,

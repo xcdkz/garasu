@@ -40,7 +40,7 @@ class _CryptoListState extends State<CryptoList> {
                     marketPlace: queriedItems[index]['market_place'],
                     logo: queriedItems[index]['image'],
                     name: queriedItems[index]['name'],
-                    currentPrice: queriedItems[index]['current_price'],
+                    currentPrice: queriedItems[index]['current_price'].toDouble(),
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) {

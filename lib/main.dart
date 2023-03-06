@@ -3,6 +3,8 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'cryptolist/list.dart' as list;
 import 'values.dart' as values;
 import 'portfolio/portfolio.dart' as portfolio;
+import 'bottombar/bar.dart' as bar;
+import 'package:flutter_donation_buttons/flutter_donation_buttons.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var val = values.Values('usd', 250);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,45 +83,50 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Container(
-        color: Colors.black,
-        child: PageView(
-          controller: val.pageController,
-          scrollDirection: Axis.horizontal,
-          onPageChanged: (index) {
-            setState(() {
-              val.activePageIndex = index;
-              val.barTitle = const Text('Garasu');
-              switch(val.activePageIndex) {
-                case 0: {
-                  val.topBarIcon = Icons.search;
-                } break;
-                case 1: {
-                  val.topBarIcon = Icons.add;
-                } break;
-                case 2: {
-                  val.topBarIcon = Icons.more_vert;
-                } break;
-              }
-            });
-          },
-          children: [
-            list.CryptoList(
-              values: val,
-            ),
-            const portfolio.Portfolio(),
-            const Center(
-              child: Text(
-                'More coming soon...',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
+          color: Colors.black,
+          child: PageView(
+            controller: val.pageController,
+            scrollDirection: Axis.horizontal,
+            onPageChanged: (index) {
+              setState(() {
+                val.activePageIndex = index;
+                val.barTitle = const Text('Garasu');
+                switch (val.activePageIndex) {
+                  case 0:
+                    {
+                      val.topBarIcon = Icons.search;
+                    }
+                    break;
+                  case 1:
+                    {
+                      val.topBarIcon = Icons.add;
+                    }
+                    break;
+                  case 2:
+                    {
+                      val.topBarIcon = Icons.more_vert;
+                    }
+                    break;
+                }
+              });
+            },
+            children: [
+              list.CryptoList(
+                values: val,
+              ),
+              const portfolio.Portfolio(),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    PatreonButton(
+                      patreonName: '1plus1equals13',
+                    ),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               )
-            )
-          ],
-        )
-      ),
+            ],
+          )),
       bottomNavigationBar: SalomonBottomBar(
         currentIndex: val.activePageIndex,
         onTap: (index) {
@@ -130,32 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         selectedColorOpacity: 0.2,
         margin: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
-        items: [
-          SalomonBottomBarItem(
-            icon: const Icon(
-              Icons.area_chart_outlined,
-            ),
-            title: const Text('Main'),
-            selectedColor: Colors.green,
-            unselectedColor: Colors.grey,
-          ),
-          SalomonBottomBarItem(
-            icon: const Icon(
-              Icons.monetization_on_outlined,
-            ),
-            title: const Text('Portfolio'),
-            selectedColor: Colors.green,
-            unselectedColor: Colors.grey,
-          ),
-          SalomonBottomBarItem(
-            icon: const Icon(
-              Icons.more_horiz,
-            ),
-            title: const Text('More'),
-            selectedColor: Colors.green,
-            unselectedColor: Colors.grey,
-          ),
-        ],
+        items: bar.bottomBarItems(),
       ),
     );
   }
